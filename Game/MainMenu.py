@@ -1,4 +1,4 @@
-import pygame
+import pygame, os
 from SysConst import GAME_STATES, SCALE, SCREEN_WIDTH, SCREEN_HEIGHT
 
 
@@ -52,10 +52,14 @@ class DeathScreen:
         self.currentRow = 0
 
     def writeResult(self, sScore, sName):
-        incert = False
 
-        with open("res.txt", "r+") as file:
-            x = file.readlines()
+        incert = False
+        x = []
+        if os.path.exists('res.txt'):
+            with open("res.txt", "r+") as file:
+                x = file.readlines()
+
+        with open("res.txt", "w") as file:
             for i in range(0, 5):
                 try:
                     if not incert:
@@ -64,12 +68,13 @@ class DeathScreen:
                             incert = True
                             file.write(str(sScore) + ";" + str(sName) + "\n")
                         else:
-                            file.write(score + ";" + name + "\n")
+                            file.write(score + ";" + name)
                     else:
-                        file.write(x[i-1])
+                        file.write(x[i - 1])
                 except IndexError:
                     file.write(str(sScore) + ";" + str(sName) + "\n")
                     break
+
     def update(self, currentState):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -93,8 +98,10 @@ class DeathScreen:
                                 and len(self.name) < 11:
                             self.name = self.name[:-1] + event.unicode + "_"
         return currentState
+
     def updateScore(self, score):
         self.score = score
+
     def drawResults(self, screen):
 
         font = pygame.font.Font("Fonts/joystix monospace.otf", 70 * SCALE)
@@ -125,4 +132,52 @@ class DeathScreen:
         textRect.center = SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + textRect.height
 
         screen.blit(text, textRect)
+
+
+
+
+
+class ResultScreen:
+    def __init__(self):
+        self.results = self.readResults()
+    def readResults(self):
+        x = []
+        if os.path.exists('res.txt'):
+            with open("res.txt", "r") as file:
+                x = file.readlines()
+        return x
+
+    def update(self, result):
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if (event.key == pygame.K_c or event.key == pygame.K_RETURN):
+                    return GAME_STATES[1]
+        return result
+    def drawResults(self, screen):
+
+        font = pygame.font.Font("Fonts/joystix monospace.otf", 70 * SCALE)
+        text = font.render("Результат", 0, (255, 255, 255))
+        textRect = text.get_rect()
+        textRect.center = SCREEN_WIDTH / 2, SCREEN_HEIGHT / 5
+
+        screen.blit(text, textRect)
+
+        for i in range(len(self.results)):
+            res, name = self.results[i].strip('\n').split(';')
+
+            font = pygame.font.Font("Fonts/joystix monospace.otf", 45 * SCALE)
+            text = font.render(name + " " + res, 0, (255, 255, 255))
+            textRect = text.get_rect()
+            textRect.center = SCREEN_WIDTH / 2, SCREEN_HEIGHT / 5*1.5 + textRect.height * i*1.5
+
+            screen.blit(text, textRect)
+
+        font = pygame.font.Font("Fonts/joystix monospace.otf", 50 * SCALE)
+
+        text = font.render("Выход", 0, (255, 255, 0))
+        textRect = text.get_rect()
+        textRect.center = SCREEN_WIDTH / 2, SCREEN_HEIGHT / 5*4
+
+        screen.blit(text, textRect)
+
 

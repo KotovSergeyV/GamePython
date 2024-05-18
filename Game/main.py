@@ -2,9 +2,9 @@ import pygame
 from Player import Player, BlowAnimGroup
 from Enemy import EnemyController, Enemy_Sprite_Group
 from Bullet import Bullet_Sprite_Group, EnemyBullet_Sprite_Group
-from SysConst import SCREEN, SCREEN_WIDTH, SCREEN_HEIGHT, TIME_TICK, GAME_STATES, SCALE
+from SysConst import SCREEN, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_STATES, SCALE
 from StarsBG import drawStars, Star_groups
-from MainMenu import MainMenu, DeathScreen
+from MainMenu import MainMenu, DeathScreen, ResultScreen
 from BaseEntity import BaseSpriteGroup
 
 
@@ -76,12 +76,16 @@ def writeScoreInGame(mainElements):
 
     screen.blit(text, (SCREEN_WIDTH-textRect.width, SCREEN_HEIGHT - textRect.height))
 
-def updateResults(deathScreen, currentState):
+def updateDeath(deathScreen, currentState):
     return deathScreen.update(currentState)
 
-def drawResults(deathScreen):
-
+def drawDeath(deathScreen):
     deathScreen.drawResults(screen)
+
+def updateResults(resScreen, currentState):
+    return resScreen.update(currentState)
+def drawResults(resScreen):
+    resScreen.drawResults(screen)
 
 
 def main(currentState):
@@ -89,6 +93,7 @@ def main(currentState):
 
     mainMenu = MainMenu()
     deathScreen = DeathScreen(mainElements.player.score)
+    resultScreen = ResultScreen()
 
     running = True
     while running:
@@ -105,6 +110,8 @@ def main(currentState):
 
                 mainElements = MainElements()
                 mainElements.enGenerator.resetTime()
+            if currentState == "Results":
+                resultScreen = ResultScreen()
             drawMenu(mainMenu)
 
         elif currentState == "Instruction":
@@ -123,8 +130,12 @@ def main(currentState):
 
 
         elif currentState == "DeathScreen":
-            currentState = updateResults(deathScreen, currentState)
-            drawResults(deathScreen)
+            currentState = updateDeath(deathScreen, currentState)
+            drawDeath(deathScreen)
+
+        elif currentState == "Results":
+            currentState = updateResults(resultScreen, currentState)
+            drawResults(resultScreen)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
