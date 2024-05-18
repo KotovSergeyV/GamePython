@@ -29,6 +29,7 @@ class EnemyController:
         for i in range(3):
             Enemy((random.randint(self.spawnWidth, SCREEN_WIDTH - self.spawnWidth), self.spawnHeight*3), 20,
                   bulletSpeed=self.bulletSpeed, generator=self)
+        self.deltaTime = time()
 
     def resetTime(self):
         self.deltaTime = time()

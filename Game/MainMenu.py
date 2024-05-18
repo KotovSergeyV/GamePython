@@ -60,15 +60,15 @@ class DeathScreen:
                 try:
                     if not incert:
                         score, name = x[i].split(";")
-                        if sScore > score:
+                        if sScore > int(score):
                             incert = True
-                            file.writelines(sScore + ";" + sName)
+                            file.write(str(sScore) + ";" + str(sName) + "\n")
                         else:
-                            file.writelines(score + ";" + name)
+                            file.write(score + ";" + name + "\n")
                     else:
-                        file.writelines(x[i-1])
+                        file.write(x[i-1])
                 except IndexError:
-                    file.writelines(str(sScore) + ";" + str(sName))
+                    file.write(str(sScore) + ";" + str(sName) + "\n")
                     break
     def update(self, currentState):
         for event in pygame.event.get():

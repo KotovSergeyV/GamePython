@@ -3,7 +3,7 @@ import pygame
 
 from Bullet import Bullet, EnemyBullet_Sprite_Group
 from SysConst import SCREEN_WIDTH, SCREEN_HEIGHT, SCALE_Y, SCALE_X, GAME_STATES, SCALE
-from BaseEntity import BaseEntity
+from BaseEntity import BaseEntity, BaseSpriteGroup
 from Map import boxGenerate
 
 
@@ -153,7 +153,7 @@ BlowAnimGroup = pygame.sprite.Group()
 
 class BlowAnimation(pygame.sprite.Sprite):
     def __init__(self, pos, player):
-        super().__init__(BlowAnimGroup)
+        super().__init__(BlowAnimGroup, BaseSpriteGroup)
         ScaleMultiplier = 30
         self.blowSheet = pygame.image.load("Images/BlowSpSheet.png").convert_alpha()
 

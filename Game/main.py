@@ -27,14 +27,14 @@ def drawInstruction():
         textRect.center = SCREEN_WIDTH/2, SCREEN_HEIGHT / 2 + (i-1) * textRect.height*1.5
         screen.blit(text, textRect)
 
-def updateMenu(currentState):
+def updateMenu(mainMenu, currentState):
     return mainMenu.update(currentState=currentState)
 
-def drawMenu():
+def drawMenu(mainMenu):
     drawStarsInGame()
     mainMenu.draw(screen)
 
-def updateGame(currentState):
+def updateGame(currentState, mainElements):
 
     Bullet_Sprite_Group.update()
     EnemyBullet_Sprite_Group.update()
@@ -48,26 +48,26 @@ def updateGame(currentState):
     return currentState
 
 
-def drawGame():
+def drawGame(mainElements):
     drawStarsInGame()
 
     Bullet_Sprite_Group.draw(screen)
     EnemyBullet_Sprite_Group.draw(screen)
 
     Enemy_Sprite_Group.draw(screen)
-    draw_hurts()
-    writeScoreInGame()
+    draw_hurts(mainElements)
+    writeScoreInGame(mainElements)
     mainElements.playerGroup.draw(screen)
     BlowAnimGroup.draw(screen)
 
 
-def draw_hurts():
+def draw_hurts(mainElements):
     for hp in range(mainElements.player.hp):
         screen.blit(mainElements.player.hpImage, (SCREEN_WIDTH/100, SCREEN_HEIGHT/5*4.5 -
                                                   hp*mainElements.player.image.get_height()/1.5))
 
 
-def writeScoreInGame():
+def writeScoreInGame(mainElements):
 
     font = pygame.font.Font("Fonts/joystix monospace.otf", 30 * SCALE)
     text = font.render("Счёт: " + str(mainElements.player.score), 0, (255, 255, 255))
@@ -76,15 +76,19 @@ def writeScoreInGame():
 
     screen.blit(text, (SCREEN_WIDTH-textRect.width, SCREEN_HEIGHT - textRect.height))
 
-def updateResults(currentState):
+def updateResults(deathScreen, currentState):
     return deathScreen.update(currentState)
 
-def drawResults():
+def drawResults(deathScreen):
 
     deathScreen.drawResults(screen)
 
 
 def main(currentState):
+    mainElements = MainElements()
+
+    mainMenu = MainMenu()
+    deathScreen = DeathScreen(mainElements.player.score)
 
     running = True
     while running:
@@ -93,12 +97,15 @@ def main(currentState):
         if currentState == "Close":
             running = False
         if currentState == "MainMenu":
-            currentState = updateMenu(currentState)
+            currentState = updateMenu(mainMenu, currentState)
             if currentState == "Game":
                 # enGenerator.resetTime()
-                BaseSpriteGroup.empty()
+                for el in BaseSpriteGroup:
+                    el.kill()
+
                 mainElements = MainElements()
-            drawMenu()
+                mainElements.enGenerator.resetTime()
+            drawMenu(mainMenu)
 
         elif currentState == "Instruction":
             drawInstruction()
@@ -109,13 +116,15 @@ def main(currentState):
 
         elif currentState == "Game":
             deathScreen.updateScore(mainElements.player.score)
-            currentState = updateGame(currentState)
-            drawGame()
+            currentState = updateGame(currentState, mainElements)
+            if currentState == "DeathScreen":
+                deathScreen = DeathScreen(mainElements.player.score)
+            drawGame(mainElements)
 
 
         elif currentState == "DeathScreen":
-            currentState = updateResults(currentState)
-            drawResults()
+            currentState = updateResults(deathScreen, currentState)
+            drawResults(deathScreen)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -150,11 +159,6 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode(SCREEN)#, flags=pygame.FULLSCREEN) #, flags=pygame.NOFRAME)
 
     clock = pygame.time.Clock()
-
-    mainElements = MainElements()
-
-    mainMenu = MainMenu()
-    deathScreen = DeathScreen(mainElements.player.score)
 
     currentState = "Instruction"
     main(currentState)

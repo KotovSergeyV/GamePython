@@ -9,7 +9,7 @@ class BaseEntity(pygame.sprite.Sprite):
         if spriteGroup is not None:
             super().__init__(spriteGroup, BaseSpriteGroup)
         else:
-            super().__init__()
+            super().__init__(BaseSpriteGroup)
         tt = TIME_TICK / 10
         self.posX = pos[0]
         self.posY = pos[1]
