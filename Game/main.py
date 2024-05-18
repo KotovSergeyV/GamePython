@@ -56,6 +56,7 @@ def drawGame():
 
     Enemy_Sprite_Group.draw(screen)
     draw_hurts()
+    writeScoreInGame()
     playerGroup.draw(screen)
     BlowAnimGroup.draw(screen)
 
@@ -63,6 +64,34 @@ def drawGame():
 def draw_hurts():
     for hp in range(player.hp):
         screen.blit(player.hpImage, (SCREEN_WIDTH/100, SCREEN_HEIGHT/5*4.5 - hp*player.image.get_height()/1.5))
+
+
+def writeScoreInGame():
+
+    font = pygame.font.Font("Fonts/joystix monospace.otf", 30 * SCALE)
+    text = font.render("Счёт: " + str(player.score), 0, (255, 255, 255))
+    textRect = text.get_rect()
+    textRect.center = SCREEN_WIDTH / 2, SCREEN_HEIGHT / 30
+
+    screen.blit(text, (SCREEN_WIDTH-textRect.width, SCREEN_HEIGHT - textRect.height))
+
+def drawResults():
+
+    drawStarsInGame()
+    font = pygame.font.Font("Fonts/joystix monospace.otf", 75 * SCALE)
+    text = font.render("Счёт: " + str(player.score), 0, (255, 255, 255))
+    textRect = text.get_rect()
+    textRect.center = SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2-textRect.height
+
+    screen.blit(text, textRect)
+
+    drawStarsInGame()
+    font = pygame.font.Font("Fonts/joystix monospace.otf", 50 * SCALE)
+    text = font.render("Выход", 0, (255, 255, 0))
+    textRect = text.get_rect()
+    textRect.center = SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2+textRect.height
+
+    screen.blit(text, textRect)
 
 
 def main(currentState):
@@ -90,6 +119,13 @@ def main(currentState):
         elif currentState == "Game":
             currentState = updateGame(currentState)
             drawGame()
+
+
+        elif currentState == "DeathScreen":
+            drawResults()
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN and (event.key == pygame.K_c or event.key == pygame.K_RETURN):
+                    currentState = GAME_STATES[1]
 
         pygame.display.flip()
 

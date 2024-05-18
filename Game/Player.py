@@ -2,7 +2,7 @@ import time
 import pygame
 
 from Bullet import Bullet, EnemyBullet_Sprite_Group
-from SysConst import SCREEN_WIDTH, SCREEN_HEIGHT, SCALE_Y, SCALE_X, GAME_STATES
+from SysConst import SCREEN_WIDTH, SCREEN_HEIGHT, SCALE_Y, SCALE_X, GAME_STATES, SCALE
 from BaseEntity import BaseEntity
 from Map import boxGenerate
 
@@ -46,6 +46,8 @@ class Player(BaseEntity):
         self.killCount = 0
         self.killed = False
 
+        self.score = 0
+
     def upgrade(self):
         if self.stage < 5:
             self.stage += 1
@@ -53,10 +55,12 @@ class Player(BaseEntity):
             if self.stage == 5:
                 self.image = self.superiorShipImage.copy()
 
-    def addKill(self):
+    def addKill(self, stage):
         self.killCount += 1
+        self.score += (stage+2)
         if self.killCount % 5 == 0:
             self.upgrade()
+
 
     def getDamage(self):
         if self.invicibilityTimer <= 0 and not self.killed:

@@ -40,7 +40,7 @@ class EnemyController:
 
     def addKill(self):
         self.killCount += 1
-        self.player.addKill()
+        self.player.addKill(self.stage)
 
     def update(self):
         self.enCount = len(Enemy_Sprite_Group)
