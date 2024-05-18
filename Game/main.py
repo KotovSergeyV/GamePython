@@ -4,13 +4,13 @@ from Enemy import EnemyController, Enemy_Sprite_Group
 from Bullet import Bullet_Sprite_Group, EnemyBullet_Sprite_Group
 from SysConst import SCREEN, SCREEN_WIDTH, SCREEN_HEIGHT, TIME_TICK, GAME_STATES, SCALE
 from StarsBG import drawStars, Star_groups
-from MainMenu import MainMenu
+from MainMenu import MainMenu, DeathScreen
+from BaseEntity import BaseSpriteGroup
 
 
 def drawStarsInGame():
     for i in range(3):
         drawStars(Star_groups[i], i+1, 3-i, screen, i)
-
 
 def drawInstruction():
     font = pygame.font.Font("Fonts/joystix monospace.otf", 75 * SCALE)
@@ -42,9 +42,9 @@ def updateGame(currentState):
     Enemy_Sprite_Group.update()
     if len(BlowAnimGroup) > 0:
         currentState = BlowAnimGroup.sprites()[0].update(current_state=currentState)
-    playerGroup.update()
+    mainElements.playerGroup.update()
 
-    enGenerator.update()
+    mainElements.enGenerator.update()
     return currentState
 
 
@@ -57,47 +57,36 @@ def drawGame():
     Enemy_Sprite_Group.draw(screen)
     draw_hurts()
     writeScoreInGame()
-    playerGroup.draw(screen)
+    mainElements.playerGroup.draw(screen)
     BlowAnimGroup.draw(screen)
 
 
 def draw_hurts():
-    for hp in range(player.hp):
-        screen.blit(player.hpImage, (SCREEN_WIDTH/100, SCREEN_HEIGHT/5*4.5 - hp*player.image.get_height()/1.5))
+    for hp in range(mainElements.player.hp):
+        screen.blit(mainElements.player.hpImage, (SCREEN_WIDTH/100, SCREEN_HEIGHT/5*4.5 -
+                                                  hp*mainElements.player.image.get_height()/1.5))
 
 
 def writeScoreInGame():
 
     font = pygame.font.Font("Fonts/joystix monospace.otf", 30 * SCALE)
-    text = font.render("Счёт: " + str(player.score), 0, (255, 255, 255))
+    text = font.render("Счёт: " + str(mainElements.player.score), 0, (255, 255, 255))
     textRect = text.get_rect()
     textRect.center = SCREEN_WIDTH / 2, SCREEN_HEIGHT / 30
 
     screen.blit(text, (SCREEN_WIDTH-textRect.width, SCREEN_HEIGHT - textRect.height))
 
+def updateResults(currentState):
+    return deathScreen.update(currentState)
+
 def drawResults():
 
-    drawStarsInGame()
-    font = pygame.font.Font("Fonts/joystix monospace.otf", 75 * SCALE)
-    text = font.render("Счёт: " + str(player.score), 0, (255, 255, 255))
-    textRect = text.get_rect()
-    textRect.center = SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2-textRect.height
-
-    screen.blit(text, textRect)
-
-    drawStarsInGame()
-    font = pygame.font.Font("Fonts/joystix monospace.otf", 50 * SCALE)
-    text = font.render("Выход", 0, (255, 255, 0))
-    textRect = text.get_rect()
-    textRect.center = SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2+textRect.height
-
-    screen.blit(text, textRect)
+    deathScreen.drawResults(screen)
 
 
 def main(currentState):
 
     running = True
-
     while running:
 
         screen.fill('black')
@@ -106,7 +95,9 @@ def main(currentState):
         if currentState == "MainMenu":
             currentState = updateMenu(currentState)
             if currentState == "Game":
-                enGenerator.resetTime()
+                # enGenerator.resetTime()
+                BaseSpriteGroup.empty()
+                mainElements = MainElements()
             drawMenu()
 
         elif currentState == "Instruction":
@@ -117,17 +108,14 @@ def main(currentState):
                     pygame.event.clear()
 
         elif currentState == "Game":
+            deathScreen.updateScore(mainElements.player.score)
             currentState = updateGame(currentState)
             drawGame()
 
 
         elif currentState == "DeathScreen":
+            currentState = updateResults(currentState)
             drawResults()
-            for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN and (event.key == pygame.K_c or event.key == pygame.K_RETURN):
-                    currentState = GAME_STATES[1]
-
-        pygame.display.flip()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -135,10 +123,23 @@ def main(currentState):
                 running = False
                 break
 
-        clock.tick(TIME_TICK)
+        if currentState == "Game":
+            pygame.display.flip()
+            clock.tick(120)
+        else:
+            pygame.display.flip()
+            clock.tick(20)
 
     pygame.quit()
 
+
+class MainElements:
+    def __init__(self):
+        self.player = Player((SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3 * 2), 50)
+        self.playerGroup = pygame.sprite.GroupSingle()
+        self.playerGroup.sprite = self.player
+
+        self.enGenerator = EnemyController(self.player)
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -150,12 +151,10 @@ if __name__ == '__main__':
 
     clock = pygame.time.Clock()
 
-    player = Player((SCREEN_WIDTH/2, SCREEN_HEIGHT/3*2), 50)
-    playerGroup = pygame.sprite.GroupSingle()
-    playerGroup.sprite = player
+    mainElements = MainElements()
 
-    enGenerator = EnemyController(player)
     mainMenu = MainMenu()
+    deathScreen = DeathScreen(mainElements.player.score)
 
     currentState = "Instruction"
     main(currentState)

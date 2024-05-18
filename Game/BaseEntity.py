@@ -1,12 +1,13 @@
 import pygame
 from SysConst import TIME_TICK, SCALE_X, SCALE_Y
 
+BaseSpriteGroup = pygame.sprite.Group()
 
 class BaseEntity(pygame.sprite.Sprite):
 
     def __init__(self, pos: tuple, speed: float, image="Images/Enemy.png", xScaleMultiplier=70, yScaleMultiplier=80, spriteGroup=None):
         if spriteGroup is not None:
-            super().__init__(spriteGroup)
+            super().__init__(spriteGroup, BaseSpriteGroup)
         else:
             super().__init__()
         tt = TIME_TICK / 10
