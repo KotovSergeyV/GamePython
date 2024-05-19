@@ -46,6 +46,7 @@ class Player(BaseEntity):
         self.killCount = 0
         self.killed = False
 
+        self.pause = False
         self.score = 0
 
     def upgrade(self):
@@ -131,6 +132,8 @@ class Player(BaseEntity):
 
     def updateKeys(self):
         self.keys = pygame.key.get_pressed()
+        if self.keys[pygame.K_ESCAPE]:
+            self.pause = True
 
     def update(self):
         if not self.killed:

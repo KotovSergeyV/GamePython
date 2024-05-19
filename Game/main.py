@@ -1,10 +1,11 @@
-import pygame
+import pygame.mixer_music
+
 from Player import Player, BlowAnimGroup
 from Enemy import EnemyController, Enemy_Sprite_Group
 from Bullet import Bullet_Sprite_Group, EnemyBullet_Sprite_Group
-from SysConst import SCREEN, SCREEN_WIDTH, SCREEN_HEIGHT, GAME_STATES, SCALE
+from SysConst import SCREEN
 from StarsBG import drawStars, Star_groups
-from MainMenu import MainMenu, DeathScreen, ResultScreen
+from MainMenu import *
 from BaseEntity import BaseSpriteGroup
 
 
@@ -20,7 +21,7 @@ def drawInstruction():
     screen.blit(text, textRect)
 
     font = pygame.font.Font("Fonts/joystix monospace.otf", 50 * SCALE)
-    rows = ['WASD / ←↑→↓ - передвижение', 'Пробел - стрелять', 'С / Enter - подтвердить']
+    rows = ['WASD / ←↑→↓ - передвижение', 'Пробел - стрелять', 'С / Enter - подтвердить, Esc - пауза']
     for i in range(len(rows)):
         text = font.render(rows[i], 0, (255, 255, 255))
         textRect = text.get_rect()
@@ -45,6 +46,8 @@ def updateGame(currentState, mainElements):
     mainElements.playerGroup.update()
 
     mainElements.enGenerator.update()
+    if mainElements.player.pause:
+        return GAME_STATES[6]
     return currentState
 
 
@@ -87,6 +90,16 @@ def updateResults(resScreen, currentState):
 def drawResults(resScreen):
     resScreen.drawResults(screen)
 
+def updatePause(pauseScreen, currentState):
+    return pauseScreen.update(currentState)
+def drawPause(pauseScreen):
+    pauseScreen.draw(screen)
+
+def playGameMusic(sound):
+    pygame.mixer_music.stop()
+    pygame.mixer_music.load(sound)
+    pygame.mixer_music.play(loops=-1)
+    pygame.mixer_music.set_volume(0.1)
 
 def main(currentState):
     mainElements = MainElements()
@@ -94,6 +107,7 @@ def main(currentState):
     mainMenu = MainMenu()
     deathScreen = DeathScreen(mainElements.player.score)
     resultScreen = ResultScreen()
+    pauseScreen = Pause()
 
     running = True
     while running:
@@ -105,6 +119,7 @@ def main(currentState):
             currentState = updateMenu(mainMenu, currentState)
             if currentState == "Game":
                 # enGenerator.resetTime()
+                playGameMusic("Sounds/09 Uppdercut.wav")
                 for el in BaseSpriteGroup:
                     el.kill()
 
@@ -119,15 +134,26 @@ def main(currentState):
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN and (event.key == pygame.K_c or event.key == pygame.K_RETURN):
                     currentState = GAME_STATES[1]
+                    playGameMusic("Sounds/10 Player 1.wav")
                     pygame.event.clear()
+
+        elif currentState == "InGamePause":
+            drawGame(mainElements)
+            currentState = updatePause(pauseScreen, currentState)
+            if currentState == "Game":
+                mainElements.player.pause = False
+            elif currentState == "DeathScreen":
+                deathScreen = DeathScreen(mainElements.player.score)
+                playGameMusic("Sounds/10 Player 1.wav")
+            drawPause(pauseScreen)
 
         elif currentState == "Game":
             deathScreen.updateScore(mainElements.player.score)
             currentState = updateGame(currentState, mainElements)
             if currentState == "DeathScreen":
                 deathScreen = DeathScreen(mainElements.player.score)
+                playGameMusic("Sounds/10 Player 1.wav")
             drawGame(mainElements)
-
 
         elif currentState == "DeathScreen":
             currentState = updateDeath(deathScreen, currentState)
@@ -167,9 +193,10 @@ if __name__ == '__main__':
     pygame.init()
     pygame.display.set_caption("Game")
 
-    screen = pygame.display.set_mode(SCREEN)#, flags=pygame.FULLSCREEN) #, flags=pygame.NOFRAME)
+    screen = pygame.display.set_mode(SCREEN, flags=pygame.FULLSCREEN) #, flags=pygame.NOFRAME)
 
     clock = pygame.time.Clock()
 
     currentState = "Instruction"
+
     main(currentState)

@@ -5,10 +5,12 @@ from SysConst import GAME_STATES, SCALE, SCREEN_WIDTH, SCREEN_HEIGHT
 class MainMenu:
     def __init__(self):
         self.button = 0
+        self.select = pygame.mixer.Sound("Sounds/Select.mp3")
 
     def update(self, currentState):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
+                self.select.play()
                 if (event.key == pygame.K_c or event.key == pygame.K_RETURN):
                     if self.button == 0:
                         return GAME_STATES[2]
@@ -49,6 +51,7 @@ class DeathScreen:
     def __init__(self, score):
         self.score = score
         self.name = '_'
+        self.select = pygame.mixer.Sound("Sounds/Select.mp3")
         self.currentRow = 0
 
     def writeResult(self, sScore, sName):
@@ -80,6 +83,8 @@ class DeathScreen:
             if event.type == pygame.KEYDOWN:
                 if self.currentRow == 1:
                     if (event.key == pygame.K_c or event.key == pygame.K_RETURN):
+
+                        self.select.play()
                         self.writeResult(self.score, self.name)
                         return GAME_STATES[1]
                     elif event.key == pygame.K_UP:
@@ -140,6 +145,7 @@ class DeathScreen:
 class ResultScreen:
     def __init__(self):
         self.results = self.readResults()
+        self.select = pygame.mixer.Sound("Sounds/Select.mp3")
     def readResults(self):
         x = []
         if os.path.exists('res.txt'):
@@ -151,6 +157,7 @@ class ResultScreen:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if (event.key == pygame.K_c or event.key == pygame.K_RETURN):
+                    self.select.play()
                     return GAME_STATES[1]
         return result
     def drawResults(self, screen):
@@ -181,3 +188,46 @@ class ResultScreen:
         screen.blit(text, textRect)
 
 
+
+
+
+class Pause:
+    def __init__(self):
+        self.row = 0
+        self.select = pygame.mixer.Sound("Sounds/Select.mp3")
+    def update(self, currentState):
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                self.select.play()
+                if (event.key == pygame.K_c or event.key == pygame.K_RETURN):
+                    if self.row == 0:
+                        return GAME_STATES[2]
+                    elif self.row == 1:
+                        return GAME_STATES[3]
+                if (event.key == pygame.K_DOWN or event.key == pygame.K_s) and self.row == 0:
+                    self.row = 1
+                if (event.key == pygame.K_UP or event.key == pygame.K_w) and self.row == 1:
+                    self.row = 0
+        return currentState
+    def writeOnScreen(self, screen, text, color, plus):
+        font = pygame.font.Font("Fonts/joystix monospace.otf", 60 * SCALE)
+        text = font.render(text, 0, color)
+        textRect = text.get_rect()
+        textRect.center = SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + plus*textRect.height
+        screen.blit(text, textRect)
+    def draw(self, screen):
+
+        if self.row == 0:
+            c1 = (255, 255, 0)
+            c2 = (255, 255, 255)
+        else:
+            c1 = (255, 255, 255)
+            c2 = (255, 255, 0)
+
+        sc = pygame.surface.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+        sc.fill(pygame.color.Color(0, 0, 0))
+        sc.set_alpha(128)
+        screen.blit(sc, sc.get_rect())
+
+        self.writeOnScreen(screen, "Продолжить", c1, -1)
+        self.writeOnScreen(screen, "Выйти", c2, 1)

@@ -13,4 +13,4 @@ SCREEN = (SCREEN_WIDTH, SCREEN_HEIGHT)
 SCALE_X, SCALE_Y = SCREEN[0] / DEFAULT_SCREEN[0], SCREEN[1] / DEFAULT_SCREEN[1]
 SCALE = int((SCALE_X + SCALE_Y) / 2)
 
-GAME_STATES = ["Instruction", "MainMenu", "Game", "DeathScreen", "Results", "Close"]
+GAME_STATES = ["Instruction", "MainMenu", "Game", "DeathScreen", "Results", "Close", "InGamePause"]
