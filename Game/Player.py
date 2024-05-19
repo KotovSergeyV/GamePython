@@ -99,13 +99,13 @@ class Player(BaseEntity):
         directionX = 0
         directionY = 0
 
-        if self.keys[pygame.K_a]:
+        if self.keys[pygame.K_a] or self.keys[pygame.K_LEFT]:
             directionX -= 1
-        if self.keys[pygame.K_d]:
+        if self.keys[pygame.K_d] or self.keys[pygame.K_RIGHT]:
             directionX += 1
-        if self.keys[pygame.K_s]:
+        if self.keys[pygame.K_s] or self.keys[pygame.K_DOWN]:
             directionY += 1
-        if self.keys[pygame.K_w]:
+        if self.keys[pygame.K_w] or self.keys[pygame.K_UP]:
             directionY -= 1
 
         if (directionY != 0 and directionX != 0):
@@ -157,10 +157,10 @@ BlowAnimGroup = pygame.sprite.Group()
 class BlowAnimation(pygame.sprite.Sprite):
     def __init__(self, pos, player):
         super().__init__(BlowAnimGroup, BaseSpriteGroup)
-        ScaleMultiplier = 30
+        self.ScaleMultiplier = 30
         self.blowSheet = pygame.image.load("Images/BlowSpSheet.png").convert_alpha()
 
-        self.width, self.height = ScaleMultiplier * SCALE_X, ScaleMultiplier * SCALE_Y
+        self.width, self.height = self.ScaleMultiplier, self.ScaleMultiplier
         self.image = pygame.Surface((self.width, self.height)).convert_alpha()
 
         self.rect = self.image.get_rect()
@@ -176,8 +176,8 @@ class BlowAnimation(pygame.sprite.Sprite):
     def animate(self):
         self.image = pygame.Surface((self.width, self.height)).convert_alpha()
         self.image.blit(self.blowSheet, (0, 0), (self.width * self.frameIndex, 0, self.width, self.height))
-        self.image = pygame.transform.scale(self.image, (
-        self.width * (1 + self.frameIndex / 2), self.height * (1 + self.frameIndex / 2)))
+        self.image = pygame.transform.scale(self.image, (self.width * (1 + self.frameIndex *SCALE_X/ 2), self.height * (1 + self.frameIndex *SCALE_Y/ 2)))
+        # self.image = pygame.transform.scale(self.image, (self.width*SCALE_X, self.height * SCALE_Y))
         self.image.set_colorkey((0, 0, 0))
         self.image = self.image.convert_alpha()
         self.rect = self.image.get_rect()

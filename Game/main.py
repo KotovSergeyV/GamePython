@@ -3,7 +3,7 @@ import pygame.mixer_music
 from Player import Player, BlowAnimGroup
 from Enemy import EnemyController, Enemy_Sprite_Group
 from Bullet import Bullet_Sprite_Group, EnemyBullet_Sprite_Group
-from SysConst import SCREEN
+from SysConst import SCREEN, SCALE_X
 from StarsBG import drawStars, Star_groups
 from MainMenu import *
 from BaseEntity import BaseSpriteGroup
@@ -14,14 +14,14 @@ def drawStarsInGame():
         drawStars(Star_groups[i], i+1, 3-i, screen, i)
 
 def drawInstruction():
-    font = pygame.font.Font("Fonts/joystix monospace.otf", 75 * SCALE)
+    font = pygame.font.Font("Fonts/joystix monospace.otf", int(75 * SCALE))
     text = font.render("Инструкция", 0, (255, 255, 255))
     textRect = text.get_rect()
     textRect.center = SCREEN_WIDTH/2, SCREEN_HEIGHT/5
     screen.blit(text, textRect)
 
-    font = pygame.font.Font("Fonts/joystix monospace.otf", 50 * SCALE)
-    rows = ['WASD / ←↑→↓ - передвижение', 'Пробел - стрелять', 'С / Enter - подтвердить, Esc - пауза']
+    font = pygame.font.Font("Fonts/joystix monospace.otf", int(50 * SCALE))
+    rows = ['WASD / ←↑→↓ - передвижение', 'Пробел - стрелять', 'С / Enter - подтвердить', 'Esc - пауза']
     for i in range(len(rows)):
         text = font.render(rows[i], 0, (255, 255, 255))
         textRect = text.get_rect()
@@ -72,7 +72,7 @@ def draw_hurts(mainElements):
 
 def writeScoreInGame(mainElements):
 
-    font = pygame.font.Font("Fonts/joystix monospace.otf", 30 * SCALE)
+    font = pygame.font.Font("Fonts/joystix monospace.otf", int(30 * SCALE))
     text = font.render("Счёт: " + str(mainElements.player.score), 0, (255, 255, 255))
     textRect = text.get_rect()
     textRect.center = SCREEN_WIDTH / 2, SCREEN_HEIGHT / 30
@@ -187,13 +187,14 @@ class MainElements:
 
         self.enGenerator = EnemyController(self.player)
 
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
     pygame.init()
     pygame.display.set_caption("Game")
 
-    screen = pygame.display.set_mode(SCREEN, flags=pygame.FULLSCREEN) #, flags=pygame.NOFRAME)
+    screen = pygame.display.set_mode(SCREEN, flags=pygame.FULLSCREEN)
 
     clock = pygame.time.Clock()
 

@@ -5,7 +5,8 @@ BaseSpriteGroup = pygame.sprite.Group()
 
 class BaseEntity(pygame.sprite.Sprite):
 
-    def __init__(self, pos: tuple, speed: float, image="Images/Enemy.png", xScaleMultiplier=70, yScaleMultiplier=80, spriteGroup=None):
+    def __init__(self, pos: tuple, speed: float, image="Images/Enemy.png", xScaleMultiplier=70,
+                 yScaleMultiplier=80, spriteGroup=None):
         if spriteGroup is not None:
             super().__init__(spriteGroup, BaseSpriteGroup)
         else:

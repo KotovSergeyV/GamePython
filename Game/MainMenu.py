@@ -27,13 +27,13 @@ class MainMenu:
 
     def draw(self, screen):
 
-        font = pygame.font.Font("Fonts/joystix monospace.otf", 75 * SCALE)
+        font = pygame.font.Font("Fonts/joystix monospace.otf", int(75 * SCALE))
         text = font.render("Космическая баталия", 0, (255, 120, 0))
         textRect = text.get_rect()
         textRect.center = SCREEN_WIDTH / 2, SCREEN_HEIGHT / 5
         screen.blit(text, textRect)
 
-        font = pygame.font.Font("Fonts/joystix monospace.otf", 50 * SCALE)
+        font = pygame.font.Font("Fonts/joystix monospace.otf", int(50 * SCALE))
         rows = ['Играть', 'Рекорды', 'Выйти']
         for i in range(len(rows)):
             if self.button == i:
@@ -109,14 +109,14 @@ class DeathScreen:
 
     def drawResults(self, screen):
 
-        font = pygame.font.Font("Fonts/joystix monospace.otf", 70 * SCALE)
+        font = pygame.font.Font("Fonts/joystix monospace.otf", int(70 * SCALE))
         text = font.render("Счёт: " + str(self.score), 0, (255, 255, 255))
         textRect = text.get_rect()
         textRect.center = SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - textRect.height*2.3
 
         screen.blit(text, textRect)
 
-        font = pygame.font.Font("Fonts/joystix monospace.otf", 55 * SCALE)
+        font = pygame.font.Font("Fonts/joystix monospace.otf", int(55 * SCALE))
         if self.currentRow == 0:
             color = (255, 255, 0)
         else:
@@ -127,7 +127,7 @@ class DeathScreen:
 
         screen.blit(text, textRect)
 
-        font = pygame.font.Font("Fonts/joystix monospace.otf", 50 * SCALE)
+        font = pygame.font.Font("Fonts/joystix monospace.otf", int(50 * SCALE))
         if self.currentRow == 0:
             color = (255, 255, 255)
         else:
@@ -162,7 +162,7 @@ class ResultScreen:
         return result
     def drawResults(self, screen):
 
-        font = pygame.font.Font("Fonts/joystix monospace.otf", 70 * SCALE)
+        font = pygame.font.Font("Fonts/joystix monospace.otf", int(70 * SCALE))
         text = font.render("Результат", 0, (255, 255, 255))
         textRect = text.get_rect()
         textRect.center = SCREEN_WIDTH / 2, SCREEN_HEIGHT / 5
@@ -172,14 +172,14 @@ class ResultScreen:
         for i in range(len(self.results)):
             res, name = self.results[i].strip('\n').split(';')
 
-            font = pygame.font.Font("Fonts/joystix monospace.otf", 45 * SCALE)
+            font = pygame.font.Font("Fonts/joystix monospace.otf", int(45 * SCALE))
             text = font.render(name + " " + res, 0, (255, 255, 255))
             textRect = text.get_rect()
             textRect.center = SCREEN_WIDTH / 2, SCREEN_HEIGHT / 5*1.5 + textRect.height * i*1.5
 
             screen.blit(text, textRect)
 
-        font = pygame.font.Font("Fonts/joystix monospace.otf", 50 * SCALE)
+        font = pygame.font.Font("Fonts/joystix monospace.otf", int(50 * SCALE))
 
         text = font.render("Выход", 0, (255, 255, 0))
         textRect = text.get_rect()
@@ -210,7 +210,7 @@ class Pause:
                     self.row = 0
         return currentState
     def writeOnScreen(self, screen, text, color, plus):
-        font = pygame.font.Font("Fonts/joystix monospace.otf", 60 * SCALE)
+        font = pygame.font.Font("Fonts/joystix monospace.otf", int(60 * SCALE))
         text = font.render(text, 0, color)
         textRect = text.get_rect()
         textRect.center = SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + plus*textRect.height
